@@ -111,3 +111,27 @@ https://www.restauraceandel.cz/denni-nabidka – daily lunch menu
 
 https://www.restaurace-oburka.cz/tydenni-menu-od-11-00-do-14-00hod/ – weekly menu with specific days
 
+## Edge cases and limitations
+
+This project is a realistic prototype, not a fully bullet-proof production system.  
+Some important edge cases are only partially handled today, but I have a clear idea how I would approach them:
+
+- **Page not available (404, timeout)**  
+  Currently I return an error response from the API. In a production system I would add retries with backoff and structured error codes (e.g. `UPSTREAM_UNAVAILABLE`).
+
+- **Menu only as an image (no text)**  
+  Right now this is not supported. A real solution would need OCR (e.g. Tesseract or a vision model) before sending the text to the LLM.
+
+- **Today’s menu not present (only weekly/other days)**  
+  The LLM is asked to focus on the requested date, but if nothing is found, I simply return an empty menu. In production I would add explicit flags like `"has_menu_for_requested_date": false` and possibly a fallback to weekly menu.
+
+- **Inconsistent price formats**  
+  This is partially solved via the `normalize_prices` tool, but there are surely more weird formats in the wild. I would extend the normalisation logic and add more unit tests with real-world examples.
+
+- **Holidays / restaurant closed**  
+  At the moment the system doesn’t detect holidays explicitly. If the page says the restaurant is closed, the LLM will likely return an empty menu. In a real system I would add a separate field like `"is_closed": true` when this is detected.
+
+- **Menu changes during the day**  
+  The current caching strategy is based mainly on `(url, date)` and a simple TTL. A production version would probably combine `(url, date)` with a hash of the page content or `Last-Modified` / `ETag` headers to detect updates without re-calling the LLM on every request.
+
+
