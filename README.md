@@ -106,5 +106,8 @@ Caching is implemented using SQLite with (url, date) as a primary key, which mat
 Just for reference, I tested the app on these real pages:
 
 https://jidelna.webflow.io/ – weekly lunch menu
+
 https://www.restauraceandel.cz/denni-nabidka – daily lunch menu
+
 https://www.restaurace-oburka.cz/tydenni-menu-od-11-00-do-14-00hod/ – weekly menu with specific days
+
