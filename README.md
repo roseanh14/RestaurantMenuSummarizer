@@ -134,4 +134,14 @@ Some important edge cases are only partially handled today, but I have a clear i
 - **Menu changes during the day**  
   The current caching strategy is based mainly on `(url, date)` and a simple TTL. A production version would probably combine `(url, date)` with a hash of the page content or `Last-Modified` / `ETag` headers to detect updates without re-calling the LLM on every request.
 
+### Example API request (curl)
+
+```bash
+curl -X POST http://127.0.0.1:5000/api/menu \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://jidelna.webflow.io/",
+    "date": "2025-11-19"
+  }'
+
 
