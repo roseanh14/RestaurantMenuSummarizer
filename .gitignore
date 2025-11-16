@@ -1,0 +1,13 @@
+
+__pycache__/
+*.pyc
+
+.venv/
+venv/
+menu_cache.db
+
+*.sqlite
+*.db
+*.log
+
+.env

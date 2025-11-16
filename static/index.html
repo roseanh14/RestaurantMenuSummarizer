@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/css/index.css" />
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Restaurant Menu Summarizer</h1>
+      <p>Enter the restaurant URL and lunch date. A clear menu + JSON will be returned</p>
+    </header>
+
+    <main>
+      <form id="form" class="form">
+        <input
+          type="url"
+          id="url-input"
+          placeholder="https://www.restaurace-example.cz/menu"
+          required
+        />
+        <input
+          type="date"
+          id="date-input"
+          required
+        />
+        <button type="submit">Loading menu</button>
+      </form>
+
+      <div id="error" class="error"></div>
+      <div id="result"></div>
+    </main>
+  </div>
+
+
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
