@@ -50,21 +50,21 @@ I structured the project around a simple but explicit flow: request → cache �
 For data extraction I deliberately combined a classic HTML scraper with an LLM. The scraper (requests + BeautifulSoup) gives me deterministic control over what text is sent to the model and avoids depending on any vendor-specific “web fetch” features. The LLM is used only for the hard part: understanding semi-structured Czech menu text and turning it into a clean JSON that matches a Pydantic schema. On top of that I added a function/tool normalize_prices so the model can convert string prices like 145,- or 149 Kč into numeric CZK values in a consistent way.
 Caching is implemented using SQLite with (url, date) as a primary key, which matches the real-world behaviour that lunch menus are daily. I delete entries with date < today as a simple TTL so the cache doesn’t grow forever. One important detail is that I don’t cache completely empty menus – if the LLM finds nothing, I’d rather call it again in the future after improving prompts or logic. Overall, the goal was not to perfectly support every possible menu format on the internet, but to build something that is realistic, debuggable and easy to extend (for example, adding allergen filters, vegetarian detection, or comparing menus across multiple restaurants).
 
-### What I’d like to discuss
-Balance between HTML parsing and LLM usage
-How far would you go with “traditional” HTML parsing (tables, headings, semantic classes) before handing the text to the LLM? Where do you see a good balance between deterministic parsing and flexible LLM understanding for this kind of use case?
+### d) What I’d like to discuss
 
-Caching and freshness in a real product
-The current invalidation strategy is based only on date (date < today). In a real system, how would you design a smarter strategy? For example, combining (url, date) with a hash of the page content, or using Last-Modified/ETag, so that menu changes during the day can be detected without sending every request to the LLM.
+1. **HTML parsing vs. LLM**
+   - Where would you draw the line between classic HTML parsing (tables, headings, CSS classes) and “let the LLM figure it out” for this kind of menu extraction?
 
-Improving reliability of LLM output
-What techniques would you use to increase recall and reduce hallucinations here? Ideas include: using multiple prompts, cross-checking the LLM output with lightweight regex/heuristics, or running a “validator” model on top of the extracted JSON and asking the LLM to fix inconsistencies.
+2. **Caching, freshness and reliability**
+   - How would you design caching in a real product so that menus stay fresh during the day (e.g. keys, TTL, invalidation on content change)?
+   - What would you add to improve reliability of the LLM output (validation, reducing hallucinations, etc.)?
 
-Scaling to many restaurants
-If the goal was to monitor tens or hundreds of menus every morning and send notifications (Slack/Discord/webhooks) when something changes, how would you approach scheduling, rate limiting for LLM calls, and handling slow or broken restaurant websites in a robust way?
-
+3. **Scaling to many restaurants**
+   - If we wanted to monitor tens or hundreds of menus every morning and send notifications, how would you approach scheduling, rate limiting of LLM calls, and handling slow or broken restaurant websites?
+     
 ### Example test URLs used during development
 Just for reference, I tested the app on these real pages:
+
 https://jidelna.webflow.io/ – weekly lunch menu
 https://www.restauraceandel.cz/denni-nabidka – daily lunch menu
 https://www.restaurace-oburka.cz/tydenni-menu-od-11-00-do-14-00hod/ – weekly menu with specific days
