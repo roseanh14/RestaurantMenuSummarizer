@@ -2,6 +2,45 @@
 
 Small Python/Flask service that takes a **restaurant menu URL + date** and returns a **structured JSON lunch menu** extracted by an LLM, with caching in SQLite. A simple HTML frontend is included for manual testing.
 
+## Web content retrieval – chosen approach
+
+For fetching the restaurant menu pages I use **Variant A: custom scraper**.
+
+- I download the HTML using `requests`.
+- I parse and clean the relevant text using **BeautifulSoup**.
+- Only the extracted text (not the whole raw HTML) is sent to the LLM.
+
+I deliberately did **not** use any built-in web search / web fetch from the LLM provider, because a custom scraper gives me deterministic control over what exactly goes into the prompt, is easier to debug, and is portable across different LLM APIs.
+
+## LLM API integration and tool calling
+
+I use the OpenAI API with **structured JSON output** that matches a Pydantic schema (e.g. `MenuResponse`, `MenuItem`).  
+The model is instructed to always return a valid JSON object with fields like `restaurant_name`, `date`, `menu_items`, etc.
+
+For tool/function calling I implemented:
+
+- **Price parsing and normalisation**  
+  A Python tool `normalize_prices` that converts messy price strings such as `"145,-"`, `"149 Kč"`, `"89Kc"` into a clean numeric CZK value (e.g. `145`).  
+  The LLM calls this tool for each menu item price, so the final JSON always contains numeric prices instead of raw strings.
+
+This way the LLM focuses on understanding the menu text and mapping items into the schema, while the price formatting rules stay in normal code.
+
+## Caching strategy
+
+For caching I use a **persistent SQLite database** with a single table that stores the full LLM-extracted menu JSON.
+
+- The **cache key** is `(url, date)`, which matches the real-world behaviour that lunch menus change daily.
+- The cached value is the entire validated response (including `restaurant_name`, `menu_items`, etc.), so repeated requests for the same `(url, date)` can be served without calling the LLM again.
+- On each request I run a simple cleanup that removes entries with `date < today`, which works as a basic TTL and prevents the cache from growing indefinitely.
+- Completely **empty menus are not cached** – if the LLM fails to extract anything, I prefer to allow future calls to try again after improving prompts or logic.
+
+I chose **SQLite** because it is:
+- easy to set up (no external service required),
+- persistent across restarts,
+- good enough for a single-node prototype or small deployment.
+
+In a larger production system this could be replaced by PostgreSQL or Redis, and the invalidation logic could be extended (e.g. combining `(url, date)` with a hash of the page content to detect changes during the same day).
+
 ## How to run the project (step-by-step)
 
 ### 1. Go to project folder
@@ -33,6 +72,7 @@ and the full JSON response (for debugging / integration).
 ## #How to run tests
 From the project root:
 py -m pytest
+
 This runs:
 
 ### Unit tests:
