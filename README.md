@@ -90,7 +90,7 @@ I structured the project around a simple but explicit flow: request → cache �
 For data extraction I deliberately combined a classic HTML scraper with an LLM. The scraper (requests + BeautifulSoup) gives me deterministic control over what text is sent to the model and avoids depending on any vendor-specific “web fetch” features. The LLM is used only for the hard part: understanding semi-structured Czech menu text and turning it into a clean JSON that matches a Pydantic schema. On top of that I added a function/tool normalize_prices so the model can convert string prices like 145,- or 149 Kč into numeric CZK values in a consistent way.
 Caching is implemented using SQLite with (url, date) as a primary key, which matches the real-world behaviour that lunch menus are daily. I delete entries with date < today as a simple TTL so the cache doesn’t grow forever. One important detail is that I don’t cache completely empty menus – if the LLM finds nothing, I’d rather call it again in the future after improving prompts or logic. Overall, the goal was not to perfectly support every possible menu format on the internet, but to build something that is realistic, debuggable and easy to extend (for example, adding allergen filters, vegetarian detection, or comparing menus across multiple restaurants).
 
-### d) What I’d like to discuss
+### What I’d like to discuss
 
 1. **HTML parsing vs. LLM**
    - Where would you draw the line between classic HTML parsing (tables, headings, CSS classes) and “let the LLM figure it out” for this kind of menu extraction?
