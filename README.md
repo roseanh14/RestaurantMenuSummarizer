@@ -49,6 +49,7 @@ cd Menu
 py -m pip install -r requirements.txt
 ### 3. Create .env in the project root
 OPENAI_API_KEY=sk-your-real-key-here
+
 API_KEY=supersecret123      # optional, used only for manual API testing (X-API-Key)
 
 API_KEY – optional API key for the X-API-Key header (for Postman / curl).
