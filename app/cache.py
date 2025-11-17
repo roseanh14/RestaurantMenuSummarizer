@@ -6,7 +6,6 @@ from .config import DB_PATH
 
 
 def init_db() -> None:
-    """Vytvoří SQLite tabulku pro cache, pokud ještě neexistuje."""
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute(
@@ -25,18 +24,12 @@ def init_db() -> None:
 
 
 def delete_old_cache(today_iso: str) -> None:
-    """Smaž záznamy pro data v minulosti (TTL / invalidace).
-
-    Pokud tabulka menu_cache ještě neexistuje (např. někdo smazal .db za běhu),
-    tiše ji vytvoříme přes init_db().
-    """
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     try:
         cur.execute("DELETE FROM menu_cache WHERE date < ?", (today_iso,))
         conn.commit()
     except sqlite3.OperationalError as e:
-        # typicky "no such table: menu_cache" → vytvoříme ji
         conn.close()
         if "no such table" in str(e):
             init_db()
@@ -47,11 +40,9 @@ def delete_old_cache(today_iso: str) -> None:
 
 
 def get_cached_menu(url: str, date_iso: str) -> dict | None:
-    """Vrátí menu z cache pro danou URL + datum, nebo None pokud není."""
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute(
-        "SELECT menu_json FROM menu_cache WHERE url = ? AND date = ?",
         (url, date_iso),
     )
     row = cur.fetchone()
@@ -62,7 +53,6 @@ def get_cached_menu(url: str, date_iso: str) -> dict | None:
 
 
 def save_cached_menu(url: str, date_iso: str, menu: dict) -> None:
-    """Uloží menu do cache pro danou URL + datum."""
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute(

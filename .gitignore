@@ -1,13 +1,28 @@
-
+# Python cache / build soubory
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-.venv/
 venv/
-menu_cache.db
+.venv/
+env/
 
-*.sqlite
-*.db
-*.log
+.pytest_cache/
+.coverage
+htmlcov/
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
 
 .env
+.env.*
+
+*.db
+*.sqlite
+*.sqlite3
+
+dist/
+build/
+*.egg-info/
