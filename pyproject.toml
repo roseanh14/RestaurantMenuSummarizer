@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "restaurant-menu-summarizer"
+version = "0.1.0"
+description = "Flask service that summarizes restaurant lunch menus into structured JSON using an LLM."
+requires-python = ">=3.12"
+
+dependencies = [
+    "Flask",
+    "requests",
+    "beautifulsoup4",
+    "python-dotenv",
+    "pydantic",
+]

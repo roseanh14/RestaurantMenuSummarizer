@@ -2,7 +2,7 @@ import sqlite3
 import json
 from datetime import datetime, timezone
 
-from .config import DB_PATH
+from ..config import DB_PATH
 
 
 def init_db() -> None:
@@ -43,6 +43,11 @@ def get_cached_menu(url: str, date_iso: str) -> dict | None:
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute(
+        """
+        SELECT menu_json
+        FROM menu_cache
+        WHERE url = ? AND date = ?
+        """,
         (url, date_iso),
     )
     row = cur.fetchone()
@@ -52,7 +57,8 @@ def get_cached_menu(url: str, date_iso: str) -> dict | None:
     return None
 
 
-def save_cached_menu(url: str, date_iso: str, menu: dict) -> None:
+def save_menu(url: str, date_iso: str, menu: dict) -> None:
+
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute(

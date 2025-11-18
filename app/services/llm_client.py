@@ -5,9 +5,9 @@ from typing import List, Optional
 import requests
 from pydantic import ValidationError
 
-from .config import OPENAI_API_KEY
-from .models import MenuResponse
-from .prompts import build_system_message, build_user_message_strict
+from app.config import OPENAI_API_KEY
+from app.domain.models import MenuResponse
+from app.services.prompts import build_system_message, build_user_message_strict
 
 
 def normalize_prices_tool(prices: List[Optional[str]]) -> dict:
