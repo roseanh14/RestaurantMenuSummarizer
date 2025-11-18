@@ -1,16 +1,12 @@
+# app/route/routes.py
 from flask import Flask, request, jsonify
-from app.config import API_KEY
+
 from app.services.menu_service import handle_menu_request
 
 
 def register_routes(app: Flask) -> None:
     @app.route("/api/menu", methods=["POST"])
     def api_menu():
-        if API_KEY and not app.testing:
-            client_key = request.headers.get("X-API-Key")
-            if client_key is not None and client_key != API_KEY:
-                return jsonify({"error": "Invalid API key"}), 401
-
         payload = request.get_json(silent=True) or {}
         url = payload.get("url")
         date_str = payload.get("date")
@@ -21,6 +17,19 @@ def register_routes(app: Flask) -> None:
             is_testing=app.testing,
         )
         return jsonify(body), status
+
+    @app.route("/api/health", methods=["GET"])
+    def health():
+        """Simple health-check endpoint used mainly for tooling (Insomnia, monitoring)."""
+        return (
+            jsonify(
+                {
+                    "status": "ok",
+                    "service": "restaurant-menu-summarizer",
+                }
+            ),
+            200,
+        )
 
     @app.route("/")
     def index():

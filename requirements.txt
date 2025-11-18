@@ -1,7 +1,0 @@
-flask
-requests
-beautifulsoup4
-python-dotenv
-pydantic
-pytest
-black
