@@ -1,0 +1,85 @@
+type: collection.insomnia.rest/5.0
+name: Menu_app
+meta:
+  id: wrk_1d87e373e6b3455ba8fa11a0bb3e4b06
+  created: 1763487424323
+  modified: 1763487424323
+  description: ""
+collection:
+  - url: http://127.0.0.1:5000/api/menu
+    name: New Request
+    meta:
+      id: req_60822f95e050491e8fdbc3fb22ba5526
+      created: 1763487431345
+      modified: 1763494464800
+      isPrivate: false
+      description: ""
+      sortKey: -1763487431345
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "url": "https://jidelna.webflow.io/",
+          "date": "2025-11-19"
+        }
+    headers:
+      - id: pair_c15bf34e658544529e7e0062bb65fd25
+        name: Content-Type
+        value: application/json
+        description: ""
+        disabled: false
+      - id: pair_a8ead72ba8a045fd88837020c84be8a1
+        name: AUTH_TOKEN
+        value: supersecret123
+        description: ""
+        disabled: false
+    authentication:
+      type: none
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:5000/api/health
+    name: New Request
+    meta:
+      id: req_5a347f6174094181bbfb941b6b557a5b
+      created: 1763494658015
+      modified: 1763494663397
+      isPrivate: false
+      description: ""
+      sortKey: -1763494658015
+    method: GET
+    body:
+      mimeType: application/json
+      text: ""
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.0.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_8e3014c1bd3c1499a9151d28c4213b7d74425a47
+    created: 1763487424354
+    modified: 1763487424354
+environments:
+  name: Base Environment
+  meta:
+    id: env_8e3014c1bd3c1499a9151d28c4213b7d74425a47
+    created: 1763487424334
+    modified: 1763487424334
+    isPrivate: false
