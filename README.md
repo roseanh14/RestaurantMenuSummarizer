@@ -12,19 +12,6 @@ For fetching the restaurant menu pages I use **Variant A: custom scraper**.
 
 I deliberately did **not** use any built-in web search / web fetch from the LLM provider, because a custom scraper gives me deterministic control over what exactly goes into the prompt, is easier to debug, and is portable across different LLM APIs.
 
-## LLM API integration and tool calling
-
-I use the OpenAI API with **structured JSON output** that matches a Pydantic schema (e.g. `MenuResponse`, `MenuItem`).  
-The model is instructed to always return a valid JSON object with fields like `restaurant_name`, `date`, `menu_items`, etc.
-
-For tool/function calling I implemented:
-
-- **Price parsing and normalisation**  
-  A Python tool `normalize_prices` that converts messy price strings such as `"145,-"`, `"149 Kč"`, `"89Kc"` into a clean numeric CZK value (e.g. `145`).  
-  The LLM calls this tool for each menu item price, so the final JSON always contains numeric prices instead of raw strings.
-
-This way the LLM focuses on understanding the menu text and mapping items into the schema, while the price formatting rules stay in normal code.
-
 ## Caching strategy
 
 For caching I use a **persistent SQLite database** with a single table that stores the full LLM-extracted menu JSON.
@@ -44,25 +31,16 @@ In a larger production system this could be replaced by PostgreSQL or Redis, and
 ## How to run the project (step-by-step)
 
 ### 1. Go to project folder
-cd Menu
-### 2. Install dependencies
-py -m pip install -r requirements.txt
 
-If you also use pyproject.toml, you can alternatively do:
+cd Menu
+
+### 2. Install dependencies
 
 pip install .
 
 or with dev tools:
 
 pip install ".[dev]"
-
-### 3. Create .env in the project root
-OPENAI_API_KEY=sk-your-real-key-here
-
-API_KEY=supersecret123      # optional, used only for manual API testing (X-API-Key)
-
-API_KEY – optional API key for the X-API-Key header (for Postman / curl).
-The frontend does not send this key.
 
 ### 4. Run the backend
 py main.py
@@ -74,26 +52,9 @@ Paste a restaurant menu URL.
 Pick a date (today or in the future).
 Click submit.
 
-You’ll see:
-restaurant name + date + source URL,
-list of menu items,
-and the full JSON response (for debugging / integration).
-
 ## #How to run tests
 From the project root:
 py -m pytest
-
-This runs:
-
-### Unit tests:
-price normalisation tool (parsing "145,-", "149 Kč", etc. to numeric CZK),
-Pydantic schema validation for the menu JSON.
-
-### Integration + caching test:
-calls POST /api/menu using Flask’s test client (with mocked LLM),
-verifies that:
-first call for a given url + date stores the menu in SQLite and returns "cached": false,
-second call for the same url + date returns from cache and sets "cached": true without calling the LLM again.
 
 ### Thoughts about the solution 
 I structured the project around a simple but explicit flow: request → cache → scraper → LLM → validation → response. Each part lives in its own module, which keeps the code readable and makes it easier to test individual pieces. Flask is a good fit here because I only need one main endpoint (POST /api/menu), and on top of that I added a tiny static frontend so it’s comfortable to try out different URLs and dates in a browser.
