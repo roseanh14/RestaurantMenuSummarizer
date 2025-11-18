@@ -52,7 +52,7 @@ If you also use pyproject.toml, you can alternatively do:
 
 pip install .
 
-# or with dev tools:
+or with dev tools:
 
 pip install ".[dev]"
 
